@@ -1,6 +1,7 @@
 # AI Powered APP
 
 Uma serie de experimentos com o framework LangChain, incluindo um tradutor para português baseado no modelo GPT-3.5.
+> "Insira sua piada sobre a frase do Joey aqui."
 
 ![screenshot](assets/screenshot.png)
 

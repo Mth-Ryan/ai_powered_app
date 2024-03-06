@@ -11,6 +11,7 @@ Backend:
 cd backend
 #nix-shell # se você usa o NixOS
 pip install -r requirements.txt
+mv example.env .env # não se esqueça de inserir sua chave OpenAI
 python main.py
 ```
 

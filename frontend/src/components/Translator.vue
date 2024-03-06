@@ -2,13 +2,20 @@
   import { ref } from 'vue';
   import { useDebounceFn } from '@vueuse/core';
 
+  import { RemoteRunnable } from "@langchain/core/runnables/remote";
+
   import {Button} from "@/components/ui/button";
   import {Textarea} from "@/components/ui/textarea";
-  import {Clipboard, MoveDown, MoveRight, Check} from "lucide-vue-next";
+  import {Clipboard, MoveDown, MoveRight, Check, AlertCircle} from "lucide-vue-next";
   import {Skeleton} from "@/components/ui/skeleton";
+
+  const chain = new RemoteRunnable({
+    url: `http://localhost:8000/translate/`,
+  });
 
   const input = ref("");
   const loading = ref(false);
+  const error = ref(false);
   const translation = ref("");
 
   const debounce = useDebounceFn(() => {
@@ -18,15 +25,21 @@
       return
     }
 
-    setTimeout(() => {
+    chain.invoke({
+      sentence: input.value
+    }).then((res) => {
       loading.value = false;
-      translation.value = input.value
-    }, 1000)
+      translation.value = (res as { content: string }).content;
+    }).catch((err: unknown) => {
+      console.error(err);
+      error.value = true;
+    })
   }, 700);
 
   const onChange = (event: { target: HTMLTextAreaElement }) => {
     input.value = event.target.value;
     loading.value = true;
+    error.value = false;
     debounce()
   }
 
@@ -35,6 +48,7 @@
   const onCopy = () => {
     clipboardClicked.value = true;
     navigator.clipboard.writeText(translation.value)
+
     setTimeout(() => {
       clipboardClicked.value = false;
     }, 1500)
@@ -66,6 +80,10 @@
         <div v-if="loading" class="w-full space-y-2">
           <Skeleton class="h-4 w-full" />
           <Skeleton class="h-4 w-10/12" />
+        </div>
+        <div v-else-if="error" class="text-rose-700 flex items-center gap-2">
+          <AlertCircle class="size-6" />
+          <span>Erro!</span>
         </div>
         <span v-else v-text="translation" />
         <Button @click="onCopy" variant="outline" size="icon" class="absolute bottom-4 right-4">

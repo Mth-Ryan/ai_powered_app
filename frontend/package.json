@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@langchain/core": "^0.1.42",
     "@radix-icons/vue": "^1.0.0",
     "@vueuse/core": "^10.9.0",
     "class-variance-authority": "^0.7.0",
